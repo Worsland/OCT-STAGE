@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi de candidature - Stages OCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="page">
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="../assets/logo.png" alt="Logo OCT"></span>
+      <span>Stages OCT<div class="brand-sub">Espace candidat</div></span>
+    </div>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="../index.html">Accueil</a>
+      <a href="offres.html">Offres de stage</a>
+      <a href="suivi.html" class="active">Suivi de candidature</a>
+      <a href="rapport.html">Mon rapport de stage</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Suivre ma candidature</h2>
+        <p class="section-sub">Entrez la reference recue lors du depot pour voir l'avancement du dossier.</p>
+      </div>
+    </div>
+
+    <form class="form-card" id="suivi-form" style="margin-bottom:28px;">
+      <div class="field">
+        <label for="reference">Reference de candidature</label>
+        <input type="text" id="reference" name="reference" placeholder="Ex. REF-101" required>
+        <div class="hint">Essayez REF-101, REF-102 ou REF-103 pour voir des exemples.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Verifier l'etat de mon dossier</button>
+    </form>
+
+    <div id="suivi-result" style="display:none;"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  Office du Commerce de la Tunisie
+</footer>
+
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/suivi.js"></script>
+</body>
+</html>

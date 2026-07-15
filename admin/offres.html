@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion des offres - Administration Stages OCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="page">
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="../assets/logo.png" alt="Logo OCT"></span>
+      <span>Stages OCT<div class="brand-sub">Espace administration</div></span>
+    </div>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="../index.html">Accueil</a>
+      <a href="../candidat/offres.html">Espace candidat</a>
+      <a href="#" onclick="deconnecterAdmin();return false;">Deconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container admin-shell">
+    <aside class="admin-side">
+      <div class="side-title">Gestion</div>
+      <a href="dashboard.html">Tableau de bord</a>
+      <a href="offres.html" class="active">Offres de stage</a>
+      <a href="candidatures.html">Candidatures</a>
+      <a href="stagiaires.html">Stagiaires</a>
+      <a href="rapports.html">Rapports de stage</a>
+    </aside>
+
+    <div>
+      <div class="section-head">
+        <div>
+          <h2>Offres de stage</h2>
+          <p class="section-sub">Publiez de nouvelles offres et gerez celles en cours.</p>
+        </div>
+        <button class="btn btn-primary" type="button" onclick="document.getElementById('new-offre-panel').classList.toggle('show-panel')">
+          + Ajouter une offre
+        </button>
+      </div>
+
+      <div class="form-panel" id="new-offre-panel">
+        <form class="form-card" id="nouvelle-offre-form">
+          <div class="field">
+            <label for="new-titre">Intitule de l'offre</label>
+            <input type="text" id="new-titre" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="new-service">Service d'accueil</label>
+              <input type="text" id="new-service" required>
+            </div>
+            <div class="field">
+              <label for="new-duree">Duree (semaines)</label>
+              <input type="number" id="new-duree" min="1" max="24" value="4">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary">Publier l'offre</button>
+        </form>
+      </div>
+
+      <div class="table-wrap mt-32">
+        <table>
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Intitule</th>
+              <th>Service</th>
+              <th>Duree</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="offres-tbody">
+            <tr><td colspan="6" class="empty-state">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  Office du Commerce de la Tunisie
+</footer>
+
+<script src="../assets/js/auth.js"></script>
+<script>requireAdmin();</script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin-offres.js"></script>
+</body>
+</html>

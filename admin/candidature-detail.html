@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail candidature - Administration Stages OCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="page">
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="../assets/logo.png" alt="Logo OCT"></span>
+      <span>Stages OCT<div class="brand-sub">Espace administration</div></span>
+    </div>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="../index.html">Accueil</a>
+      <a href="../candidat/offres.html">Espace candidat</a>
+      <a href="#" onclick="deconnecterAdmin();return false;">Deconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container admin-shell">
+    <aside class="admin-side">
+      <div class="side-title">Gestion</div>
+      <a href="dashboard.html">Tableau de bord</a>
+      <a href="offres.html">Offres de stage</a>
+      <a href="candidatures.html" class="active">Candidatures</a>
+      <a href="stagiaires.html">Stagiaires</a>
+      <a href="rapports.html">Rapports de stage</a>
+    </aside>
+
+    <div>
+      <p><a href="candidatures.html">&larr; Retour a la liste des candidatures</a></p>
+      <div id="detail-root">
+        <div class="empty-state">Chargement...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  Office du Commerce de la Tunisie
+</footer>
+
+<script src="../assets/js/auth.js"></script>
+<script>requireAdmin();</script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin-candidature-detail.js"></script>
+</body>
+</html>

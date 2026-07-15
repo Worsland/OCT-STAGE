@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "candidature_id": 102,
+    "stagiaire_nom": "Salma Bouzid",
+    "service": "Unite Informatique",
+    "domaine": "Systemes d'Information",
+    "date_debut_stage": "2026-07-15",
+    "duree_semaines": 4,
+    "titre": "Gestion numerique des dossiers de stagiaires",
+    "fichier": "Rapport_Salma_Bouzid.pdf",
+    "date_depot": "2026-08-12",
+    "statut": "valide"
+  },
+  {
+    "id": 2,
+    "candidature_id": 104,
+    "stagiaire_nom": "Mehdi Trabelsi",
+    "service": "Unite Informatique",
+    "domaine": "Genie Logiciel",
+    "date_debut_stage": "2026-01-12",
+    "duree_semaines": 4,
+    "titre": "Observation du cycle de gestion des stages a l'OCT",
+    "fichier": "Rapport_Mehdi_Trabelsi.pdf",
+    "date_depot": "2026-02-10",
+    "statut": "valide"
+  },
+  {
+    "id": 3,
+    "candidature_id": 105,
+    "stagiaire_nom": "Ines Chaabane",
+    "service": "Unite Informatique",
+    "domaine": "Data et Statistiques",
+    "date_debut_stage": "2025-11-03",
+    "duree_semaines": 2,
+    "titre": "Initiation aux tableaux de bord statistiques",
+    "fichier": "Rapport_Ines_Chaabane.pdf",
+    "date_depot": "2025-11-20",
+    "statut": "en_attente"
+  }
+]

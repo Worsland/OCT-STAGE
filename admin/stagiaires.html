@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stagiaires - Administration Stages OCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="page">
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="../assets/logo.png" alt="Logo OCT"></span>
+      <span>Stages OCT<div class="brand-sub">Espace administration</div></span>
+    </div>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="../index.html">Accueil</a>
+      <a href="../candidat/offres.html">Espace candidat</a>
+      <a href="#" onclick="deconnecterAdmin();return false;">Deconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container admin-shell">
+    <aside class="admin-side">
+      <div class="side-title">Gestion</div>
+      <a href="dashboard.html">Tableau de bord</a>
+      <a href="offres.html">Offres de stage</a>
+      <a href="candidatures.html">Candidatures</a>
+      <a href="stagiaires.html" class="active">Stagiaires</a>
+      <a href="rapports.html">Rapports de stage</a>
+    </aside>
+
+    <div>
+      <div class="section-head">
+        <div>
+          <h2>Stagiaires</h2>
+          <p class="section-sub">Candidatures validees, du debut de stage le plus recent au moins recent.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Stagiaire</th>
+              <th>Debut de stage</th>
+              <th>Duree</th>
+              <th>Domaine</th>
+              <th>Service</th>
+              <th>Evaluation</th>
+              <th>Dossier</th>
+            </tr>
+          </thead>
+          <tbody id="stagiaires-tbody">
+            <tr><td colspan="7" class="empty-state">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <input type="file" id="eval-file-input" accept=".pdf,.doc,.docx" style="display:none;">
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  Office du Commerce de la Tunisie
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../assets/js/emailjs-config.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script>requireAdmin();</script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin-stagiaires.js?v=2"></script>
+</body>
+</html>

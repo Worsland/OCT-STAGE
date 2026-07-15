@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCT Stages - Plateforme de gestion des offres et des demandes de stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page">
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><img src="assets/logo.png" alt="Logo OCT"></span>
+      <span>
+        Stages OCT
+        <div class="brand-sub">Office du Commerce de la Tunisie</div>
+      </span>
+    </div>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
+    <nav class="nav-links">
+      <a href="index.html" class="active">Accueil</a>
+      <a href="candidat/offres.html">Espace candidat</a>
+      <a href="admin/dashboard.html">Espace administration</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+
+  <section class="hero" style="background:linear-gradient(90deg, rgba(15,42,69,.95) 0%, rgba(15,42,69,.82) 55%, rgba(15,42,69,.4) 100%), url('assets/octImage.jpg') center/cover no-repeat;">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-eyebrow">Office du Commerce de la Tunisie &mdash; OCT</div>
+        <h1>Une plateforme unique pour suivre chaque demande de stage, du depot a la convention.</h1>
+        <p>Consultez les offres, deposez un dossier en ligne et suivez son avancement. Cote administration, gerez les offres, validez les candidatures et generez les conventions.</p>
+        <div class="hero-actions">
+          <a href="candidat/offres.html" class="btn btn-primary">Consulter les offres de stage</a>
+          <a href="admin/dashboard.html" class="btn btn-outline" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35);">Espace administration</a>
+        </div>
+      </div>
+      <div class="stepper" style="background:rgba(255,255,255,.06);border-radius:14px;padding:24px 16px;">
+        <div class="step done">
+          <div class="step-line"></div>
+          <div class="step-circle">01</div>
+          <div class="step-label" style="color:#CBD8E4;">Depot</div>
+        </div>
+        <div class="step done">
+          <div class="step-line"></div>
+          <div class="step-circle">02</div>
+          <div class="step-label" style="color:#CBD8E4;">Examen</div>
+        </div>
+        <div class="step active">
+          <div class="step-line"></div>
+          <div class="step-circle">03</div>
+          <div class="step-label" style="color:#CBD8E4;">Decision</div>
+        </div>
+        <div class="step">
+          <div class="step-line"></div>
+          <div class="step-circle">04</div>
+          <div class="step-label" style="color:#CBD8E4;">Convention</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container mt-32">
+    <div class="section-head">
+      <div>
+        <h2>Deux espaces, un seul circuit</h2>
+        <p class="section-sub">Chaque demande suit le meme circuit de validation, visible des deux cotes.</p>
+      </div>
+    </div>
+
+    <div class="space-grid">
+      <div class="space-card">
+        <span class="tag">Espace candidat</span>
+        <h3>Deposer et suivre une demande de stage</h3>
+        <p>Consultez les offres disponibles, deposez votre CV et votre lettre de motivation, puis suivez l'etat de votre dossier en temps reel.</p>
+        <a href="candidat/offres.html" class="btn btn-secondary">Acceder a l'espace candidat</a>
+      </div>
+      <div class="space-card">
+        <span class="tag">Espace administration</span>
+        <h3>Gerer les offres et les candidatures</h3>
+        <p>Publiez des offres, examinez les dossiers recus, validez ou refusez les candidatures et suivez les statistiques de la periode.</p>
+        <a href="admin/dashboard.html" class="btn btn-secondary">Acceder a l'espace administration</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  Office du Commerce de la Tunisie &mdash; Prototype de la plateforme de gestion des stages
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "titre": "Observation de la plateforme de gestion des stages",
+    "service": "Unite Informatique",
+    "domaine": "Genie Logiciel",
+    "description": "Decouverte du cycle de gestion des demandes de stage, des offres et des outils numeriques associes.",
+    "date_debut": "2026-09-01",
+    "date_fin": "2026-09-26",
+    "duree_semaines": 4,
+    "statut": "ouverte"
+  },
+  {
+    "id": 2,
+    "titre": "Assistance a la gestion des dossiers de stagiaires",
+    "service": "Unite Informatique",
+    "domaine": "Systemes d'Information",
+    "description": "Participation au suivi administratif des candidatures, des conventions et des attestations.",
+    "date_debut": "2026-07-15",
+    "date_fin": "2026-08-08",
+    "duree_semaines": 4,
+    "statut": "ouverte"
+  },
+  {
+    "id": 3,
+    "titre": "Initiation aux tableaux de bord statistiques",
+    "service": "Unite Informatique",
+    "domaine": "Data et Statistiques",
+    "description": "Observation de la production des statistiques de suivi des stages et des indicateurs de gestion.",
+    "date_debut": "2026-10-05",
+    "date_fin": "2026-10-19",
+    "duree_semaines": 2,
+    "statut": "fermee"
+  }
+]
