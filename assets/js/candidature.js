@@ -121,6 +121,18 @@ document.getElementById("candidature-form").addEventListener("submit", function 
     if (data.success) {
       alertBox.className = "alert alert-success show";
       alertBox.textContent = `Candidature envoyée! Référence : ${data.reference}`;
+      if (typeof envoyerEmail === "function") {
+        envoyerEmail({
+          to_email: session.email,
+          to_name: session.prenom + " " + session.nom,
+          subject: "Confirmation de votre candidature - " + data.reference,
+          message: "Nous avons bien recu votre candidature. Votre reference de suivi est : " + data.reference + ". Conservez-la pour suivre l'evolution de votre candidature.",
+          verification_link: window.location.origin + "/candidat/suivi.html?reference=" + encodeURIComponent(data.reference)
+        }).catch(function () {
+          // L'email est un bonus : un echec d'envoi ne doit pas bloquer
+          // la candidature, deja enregistree en base a ce stade.
+        });
+      }
       e.target.reset();
       prefillFromSession();
       setTimeout(() => window.location.href = 'mes-candidatures.html', 2000);
