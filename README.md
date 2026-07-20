@@ -7,7 +7,6 @@ concus pour ce projet).
 
 ## Arborescence
 
-```
 proto/
 ├── index.html                  Page d'accueil (choix d'espace)
 ├── rapports.html                Page publique : rapports de stage valides
@@ -38,7 +37,21 @@ proto/
 └── config/
     ├── config.example.php       Constantes de connexion (a completer)
     └── database.example.php     Connexion PDO reutilisable + exemple de requete
-```
+
+## Pourquoi cette organisation
+...
+## Etapes pour brancher la base de donnees
+...
+## Authentification (candidats et administrateurs)
+...
+## Emails automatiques
+...
+## Detail d'une candidature (admin)
+...
+## Stagiaires et rapports de stage
+...
+## Connexion reelle a la base de donnees (deja commencee)
+...
 
 ## Pourquoi cette organisation
 
