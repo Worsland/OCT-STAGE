@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Offres de stage - Stages OCT</title>
+<title>Suivi de candidature - Stages OCT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
@@ -19,11 +19,10 @@
     <button class="nav-toggle" aria-label="Ouvrir le menu">&#9776;</button>
     <nav class="nav-links">
       <a href="../index.html">Accueil</a>
-      <a href="offres.html" class="active">Offres de stage</a>
-     
-      <a href="suivi.html">Suivi de candidature</a>
+      <a href="offres.html">Offres de stage</a>
+
+      <a href="suivi.html" class="active">Suivi de candidature</a>
       <a href="rapport.html">Mon rapport de stage</a>
-     
     </nav>
   </div>
 </header>
@@ -32,13 +31,21 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <h2>Offres de stage disponibles</h2>
-        <p class="section-sub">Choisissez une offre pour deposer votre candidature en ligne.</p>
+        <h2>Suivre ma candidature</h2>
+        <p class="section-sub">Entrez la reference recue lors du depot pour voir l'avancement du dossier.</p>
       </div>
     </div>
-    <div class="card-grid" id="offres-grid">
-      <div class="empty-state">Chargement des offres...</div>
-    </div>
+
+    <form class="form-card" id="suivi-form" style="margin-bottom:28px;">
+      <div class="field">
+        <label for="reference">Reference de candidature</label>
+        <input type="text" id="reference" name="reference" placeholder="Ex. REF-101" required>
+        <div class="hint">Essayez REF-101, REF-102 ou REF-103 pour voir des exemples.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Verifier l'etat de mon dossier</button>
+    </form>
+
+    <div id="suivi-result" style="display:none;"></div>
   </div>
 </main>
 
@@ -48,6 +55,6 @@
 
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/main.js"></script>
-<script src="../assets/js/offres.js"></script>
+<script src="../assets/js/suivi.js"></script>
 </body>
 </html>

@@ -57,41 +57,40 @@ function changerStatut(id, statut) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: id, statut: statut })
   })
-    .then(function (res) {
-      return res.json().then(function (data) {
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Erreur serveur");
-        }
-        return data;
-      });
-    })
-    .then(function () {
+  .then(function (res) { return res.json().then(function (data) {
+      if (!res.ok || data.error) throw new Error(data.error || "Erreur serveur");
+      return data;
+  })})
+  .then(function () {
       candidature.statut = statut;
+      
+      // --- ENVOI EMAILJS REEL ---
+      var sujet, message;
       if (statut === "validee") {
-        candidature.service_affecte = "";
-        simulerEnvoiEmail(
-          candidature.candidat_email,
-          "Votre candidature a ete validee",
-          "Felicitations, votre candidature pour \u00ab " + candidature.offre_titre + " \u00bb a ete validee. La convention de stage va etre generee."
-        );
-      } else if (statut === "refusee") {
-        simulerEnvoiEmail(
-          candidature.candidat_email,
-          "Reponse a votre candidature",
-          "Nous vous remercions pour votre candidature a \u00ab " + candidature.offre_titre + " \u00bb. Apres examen, nous ne pourrons pas y donner suite cette fois-ci."
-        );
+        sujet = "Votre candidature a été validée - OCT";
+        message = "Félicitations " + candidature.candidat_nom + ", votre candidature pour « " + candidature.offre_titre + " » a été validée. La convention de stage va être générée.";
+      } else {
+        sujet = "Réponse à votre candidature - OCT";
+        message = "Merci " + candidature.candidat_nom + ", pour votre candidature à « " + candidature.offre_titre + " ». Après examen, nous ne pourrons pas y donner suite cette fois-ci.";
       }
 
+      return envoyerEmail({
+        to_email: candidature.candidat_email,
+        to_name: candidature.candidat_nom,
+        subject: sujet,
+        message: message,
+        verification_link: "https://stages.oct.nat.tn/suivi.html" // lien vers suivi
+      });
+  })
+  .then(function(result) {
+      if(result && result.skipped) console.warn("EmailJS non configuré");
       persistLocal();
       renderCandidaturesTable();
-    })
-    .catch(function (err) {
-      if (typeof showToast === "function") {
-        showToast("Echec de la mise a jour du statut : " + err.message);
-      } else {
-        alert("Echec de la mise a jour du statut : " + err.message);
-      }
-    });
+      if(typeof showToast === "function") showToast("Statut mis à jour + email envoyé");
+  })
+  .catch(function (err) {
+      alert("Echec : " + err.message);
+  });
 }
 
 fetch("http://localhost/oct-stage/api/admin/candidatures.php")

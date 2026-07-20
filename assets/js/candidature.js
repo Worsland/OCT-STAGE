@@ -12,6 +12,40 @@ function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+// IDs des offres auxquelles le candidat connecte a deja postule.
+var offresDejaPostulees = [];
+
+function chargerOffresDejaPostulees() {
+  return fetch('../api/candidatures.php?id_candidat=' + encodeURIComponent(session.id))
+    .then(res => res.ok ? res.json() : [])
+    .then(candidatures => {
+      offresDejaPostulees = (Array.isArray(candidatures) ? candidatures : [])
+        .map(c => String(c.id_offre));
+    })
+    .catch(() => { offresDejaPostulees = []; });
+}
+
+// Affiche un avertissement et desactive l'envoi si l'offre selectionnee a deja
+// fait l'objet d'une candidature de la part de ce candidat.
+function vérifierDoublon() {
+  var select = document.getElementById("offre_id");
+  var alertBox = document.getElementById("form-alert");
+  var submitBtn = document.querySelector("#candidature-form button[type=submit]");
+  var dejaPostule = offresDejaPostulees.indexOf(select.value) !== -1;
+
+  if (dejaPostule) {
+    alertBox.className = "alert alert-danger show";
+    alertBox.textContent = "Vous avez deja postule a cette offre. Consultez \"Mes candidatures\" pour suivre son etat.";
+    if (submitBtn) submitBtn.disabled = true;
+  } else {
+    if (alertBox.classList.contains("alert-danger")) {
+      alertBox.className = "alert";
+      alertBox.textContent = "";
+    }
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
 // Charge les offres depuis la BDD
 function fillOffreSelect() {
   fetch('http://localhost/oct-stage/api/offres.php')
@@ -23,9 +57,12 @@ function fillOffreSelect() {
 
       select.innerHTML = '<option value="">Choisir une offre...</option>' +
         ouvertes.map(o => {
-          var selected = String(o.id_offre) === preselect? " selected" : "";
-          return `<option value="${o.id_offre}"${selected}>${o.titre} - ${o.entreprise}</option>`;
+          var selected = String(o.id) === preselect ? " selected" : "";
+          return `<option value="${o.id}"${selected}>${o.titre} - ${o.entreprise || o.service}</option>`;
         }).join("");
+
+      chargerOffresDejaPostulees().then(vérifierDoublon);
+      select.addEventListener("change", vérifierDoublon);
     });
 }
 
@@ -52,6 +89,14 @@ prefillFromSession();
 // Submit du formulaire vers l'API
 document.getElementById("candidature-form").addEventListener("submit", function (e) {
   e.preventDefault();
+
+  const offreId = document.getElementById('offre_id').value;
+  if (offresDejaPostulees.indexOf(offreId) !== -1) {
+    const alertBox = document.getElementById("form-alert");
+    alertBox.className = "alert alert-danger show";
+    alertBox.textContent = "Vous avez deja postule a cette offre. Consultez \"Mes candidatures\" pour suivre son etat.";
+    return;
+  }
 
   const formData = new FormData();
   formData.append('id_offre', document.getElementById('offre_id').value);

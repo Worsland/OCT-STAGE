@@ -6,6 +6,9 @@
  * utilisable hors connexion a la base de donnees.
  */
 
+// IDs des offres auxquelles le candidat connecte a deja postule (rempli avant renderOffres).
+var offresDejaPostulees = [];
+
 function renderOffres(offres) {
   var grid = document.getElementById("offres-grid");
   var ouvertes = offres.filter(function (o) { return o.statut === "ouverte"; });
@@ -18,10 +21,18 @@ function renderOffres(offres) {
   var session = getSession();
 
   grid.innerHTML = ouvertes.map(function (o) {
+    var dejaPostule = session && offresDejaPostulees.indexOf(String(o.id)) !== -1;
     var candidatureUrl = "candidature.html?offre_id=" + encodeURIComponent(o.id);
     var target = session ? candidatureUrl : "connexion.html?next=" + encodeURIComponent(candidatureUrl);
     var label = session ? "Postuler a cette offre" : "Se connecter pour postuler";
     var btnClass = session ? "btn-primary" : "btn-secondary";
+    var actionHtml = '<a class="btn ' + btnClass + ' btn-sm" href="' + target + '">' + label + '</a>';
+
+    if (dejaPostule) {
+      actionHtml =
+        '<span class="badge badge-pending" style="align-self:flex-start;">Deja postule</span>' +
+        '<a class="btn btn-secondary btn-sm" href="mes-candidatures.html">Voir ma candidature</a>';
+    }
 
     return (
       '<div class="card">' +
@@ -36,25 +47,43 @@ function renderOffres(offres) {
           "<span>" + formatDate(o.date_debut) + "</span>" +
         "</div>" +
         '<p class="desc">' + o.description + "</p>" +
-        '<a class="btn ' + btnClass + ' btn-sm" href="' + target + '">' + label + '</a>' +
+        actionHtml +
       "</div>"
     );
   }).join("");
 }
 
-fetch("http://localhost/oct-stage/api/offres.php")
-  .then(function (res) {
-    if (!res.ok) throw new Error("API indisponible");
-    return res.json();
-  })
-  .then(renderOffres)
-  .catch(function () {
-    // Repli demo : base de donnees pas encore branchee.
-    fetch("../data/offres.json")
-      .then(function (res) { return res.json(); })
-      .then(renderOffres)
-      .catch(function () {
-        document.getElementById("offres-grid").innerHTML =
-          '<div class="empty-state">Impossible de charger les offres pour le moment.</div>';
-      });
-  });
+function chargerOffresEtRendre() {
+  fetch("http://localhost/oct-stage/api/offres.php")
+    .then(function (res) {
+      if (!res.ok) throw new Error("API indisponible");
+      return res.json();
+    })
+    .then(renderOffres)
+    .catch(function () {
+      // Repli demo : base de donnees pas encore branchee.
+      fetch("../data/offres.json")
+        .then(function (res) { return res.json(); })
+        .then(renderOffres)
+        .catch(function () {
+          document.getElementById("offres-grid").innerHTML =
+            '<div class="empty-state">Impossible de charger les offres pour le moment.</div>';
+        });
+    });
+}
+
+// Si un candidat est connecte, on recupere d'abord ses candidatures existantes
+// pour savoir a quelles offres il a deja postule, avant d'afficher la liste.
+var sessionCourante = typeof getSession === "function" ? getSession() : null;
+if (sessionCourante && sessionCourante.id) {
+  fetch("../api/candidatures.php?id_candidat=" + encodeURIComponent(sessionCourante.id))
+    .then(function (res) { return res.ok ? res.json() : []; })
+    .then(function (candidatures) {
+      offresDejaPostulees = (Array.isArray(candidatures) ? candidatures : [])
+        .map(function (c) { return String(c.id_offre); });
+    })
+    .catch(function () { offresDejaPostulees = []; })
+    .then(chargerOffresEtRendre);
+} else {
+  chargerOffresEtRendre();
+}

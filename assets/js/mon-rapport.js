@@ -16,25 +16,17 @@ if (!session) {
 }
 
 function getCandidatures() {
-  var cached = sessionStorage.getItem("oct_candidatures_cache");
-  if (cached) return Promise.resolve(JSON.parse(cached));
   return fetch("../api/candidatures.php?id_candidat=" + encodeURIComponent(session.id))
     .then(function (r) { return r.json(); });
 }
 function getRapports() {
-  var cached = sessionStorage.getItem("oct_rapports_cache");
-  if (cached) return Promise.resolve(JSON.parse(cached));
   return fetch("../api/rapport/list.php?id_candidat=" + encodeURIComponent(session.id))
     .then(function (r) { return r.json(); });
-}
-function saveRapportsCache(list) {
-  sessionStorage.setItem("oct_rapports_cache", JSON.stringify(list));
 }
 
 Promise.all([getCandidatures(), getRapports()]).then(function (results) {
   var candidatures = Array.isArray(results[0]) ? results[0] : [];
   var rapports = Array.isArray(results[1]) ? results[1] : [];
-  saveRapportsCache(rapports);
 
   var stage = candidatures.find(function (c) {
     return c.statut === "validee" && ((c.candidat_email || "").toLowerCase() === session.email.toLowerCase());
@@ -77,6 +69,7 @@ Promise.all([getCandidatures(), getRapports()]).then(function (results) {
         '<div class="info-row"><span class="k">Titre</span><span class="v">' + rapportExistant.titre + "</span></div>" +
         '<div class="info-row"><span class="k">Depose le</span><span class="v">' + formatDate(rapportExistant.date_depot) + "</span></div>" +
         '<div class="info-row"><span class="k">Statut</span><span class="v">' + statutRapportBadge(rapportExistant.statut) + "</span></div>" +
+        '<a class="btn btn-outline btn-sm mt-8" href="../api/rapport/download.php?id=' + rapportExistant.id + '&id_candidat=' + encodeURIComponent(session.id) + '" target="_blank" rel="noopener">Voir mon rapport</a>' +
       "</div>";
   } else {
     statusHtml =

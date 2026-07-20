@@ -10,7 +10,9 @@ if (!isset($_GET['id_candidat']) || (int) $_GET['id_candidat'] <= 0) {
 $id_candidat = (int) $_GET['id_candidat'];
 
 $stmt = $pdo->prepare("
-    SELECT c.*, o.titre, o.entreprise, cand.email AS candidat_email
+    SELECT c.*, o.titre, o.entreprise, o.domaine, o.service,
+           COALESCE(NULLIF(c.duree_semaines, 0), o.duree_semaines) AS duree_semaines,
+           cand.email AS candidat_email
     FROM CANDIDATURE c
     JOIN OFFRE_STAGE o ON c.id_offre = o.id_offre
     LEFT JOIN CANDIDAT cand ON cand.id = c.id_candidat
@@ -18,5 +20,5 @@ $stmt = $pdo->prepare("
     ORDER BY c.date_depot DESC
 ");
 $stmt->execute([$id_candidat]);
-echo json_encode($stmt->fetchAll());
+echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 ?>

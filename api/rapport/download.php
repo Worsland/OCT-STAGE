@@ -10,11 +10,6 @@ function isAdminRequest(): bool {
     return $header === '1' || $cookie === '1' || $queryFlag === '1';
 }
 
-if (!isAdminRequest()) {
-    http_response_code(403);
-    exit('Accès réservé aux administrateurs connectés.');
-}
-
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
     http_response_code(400);
@@ -22,13 +17,23 @@ if ($id <= 0) {
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT contenu, nom_fichier, type_fichier FROM RAPPORT_STAGE WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT contenu, nom_fichier, type_fichier, id_candidat FROM RAPPORT_STAGE WHERE id = ?');
     $stmt->execute([$id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row || empty($row['contenu'])) {
         http_response_code(404);
         exit('Rapport introuvable');
+    }
+
+    // Un candidat non-admin ne peut telecharger que SON PROPRE rapport
+    // (id_candidat fourni en parametre et correspondant au proprietaire).
+    $id_candidat = isset($_GET['id_candidat']) ? (int)$_GET['id_candidat'] : 0;
+    $isOwner = $id_candidat > 0 && $id_candidat === (int)$row['id_candidat'];
+
+    if (!isAdminRequest() && !$isOwner) {
+        http_response_code(403);
+        exit('Accès réservé à l\'administrateur ou au candidat proprietaire du rapport.');
     }
 
     $filename = $row['nom_fichier'] ?: 'rapport.pdf';

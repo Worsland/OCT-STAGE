@@ -83,6 +83,8 @@ function render(candidature, list) {
           '<div class="info-row"><span class="k">Telephone</span><span class="v">' + (candidature.candidat_telephone || "-") + "</span></div>" +
           '<div class="info-row"><span class="k">Date de depot</span><span class="v">' + formatDate(candidature.date_soumission) + "</span></div>" +
           '<div class="info-row"><span class="k">Service affecte</span><span class="v">' + (candidature.service_affecte || "-") + "</span></div>" +
+          '<div class="info-row"><span class="k">Debut de stage</span><span class="v">' + (candidature.date_debut_stage ? formatDate(candidature.date_debut_stage) : "-") + "</span></div>" +
+          '<div class="info-row"><span class="k">Duree</span><span class="v">' + (candidature.duree_semaines ? candidature.duree_semaines + " semaines" : "-") + "</span></div>" +
         "</div>" +
         '<div class="mt-32">' + actionsHtml + "</div>" +
       "</div>" +
@@ -105,43 +107,37 @@ function decider(statut) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: currentId, statut: statut })
   })
-    .then(function (res) {
-      return res.json().then(function (data) {
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Erreur serveur");
-        }
-        return data;
-      });
-    })
-    .then(function () {
-      candidature.statut = statut;
-      if (statut === "validee") {
-        candidature.service_affecte = "";
-        simulerEnvoiEmail(
-          candidature.candidat_email,
-          "Votre candidature a ete validee",
-          "Felicitations, votre candidature pour \u00ab " + candidature.offre_titre + " \u00bb a ete validee."
-        );
-      } else {
-        simulerEnvoiEmail(
-          candidature.candidat_email,
-          "Reponse a votre candidature",
-          "Nous vous remercions pour votre candidature a \u00ab " + candidature.offre_titre + " \u00bb. Nous ne pourrons pas y donner suite cette fois-ci."
-        );
-      }
+  .then(function (res) { return res.json().then(function (data) {
+      if (!res.ok || data.error) throw new Error(data.error || "Erreur serveur");
+      return data;
+  })})
+  .then(function (data) {
+      candidature.statut = data.statut || statut;
+      if (data.service_affecte) candidature.service_affecte = data.service_affecte;
+      if (data.duree_semaines) candidature.duree_semaines = data.duree_semaines;
+      if (data.date_debut_stage) candidature.date_debut_stage = data.date_debut_stage;
 
+      var sujet = statut === "validee" ? "Votre candidature a été validée" : "Réponse à votre candidature";
+      var message = statut === "validee" 
+        ? "Félicitations, votre candidature pour « " + candidature.offre_titre + " » a été validée."
+        : "Nous vous remercions pour votre candidature à « " + candidature.offre_titre + " ». Nous ne pourrons pas y donner suite.";
+
+      return envoyerEmail({
+        to_email: candidature.candidat_email,
+        to_name: candidature.candidat_nom,
+        subject: sujet,
+        message: message,
+        verification_link: window.location.origin + "/pages/suivi.html"
+      });
+  })
+  .then(function(){
       saveCache(currentList);
       render(candidature, currentList);
-    })
-    .catch(function (err) {
-      if (typeof showToast === "function") {
-        showToast("Echec de la mise a jour du statut : " + err.message);
-      } else {
-        alert("Echec de la mise a jour du statut : " + err.message);
-      }
-    });
+  })
+  .catch(function (err) {
+      alert("Echec : " + err.message);
+  });
 }
-
 getCandidatures().then(function (list) {
   currentList = list;
   saveCache(list);
