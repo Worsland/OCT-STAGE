@@ -25,8 +25,7 @@ try {
          FROM CANDIDATURE c
          LEFT JOIN OFFRE_STAGE o ON o.id_offre = c.id_offre
          LEFT JOIN CANDIDAT cand ON cand.id = c.id_candidat
-         WHERE c.statut = 'validee'
-         ORDER BY c.date_debut_stage DESC, c.date_depot DESC"
+         ORDER BY c.date_depot DESC"
     );
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
