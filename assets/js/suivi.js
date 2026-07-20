@@ -1,29 +1,9 @@
 /*
  * suivi.js
  * Recherche une candidature par reference et affiche son etat dans le stepper.
- *
- * Migration BDD : remplacer la recherche dans le tableau charge depuis
- * data/candidatures.json par une requete, par ex.
- * fetch("/api/candidature.php?id=" + ref), qui execute cote serveur :
- * SELECT * FROM candidature WHERE id = :id (voir table CANDIDATURE).
+ * La recherche se fait cote serveur via api/candidature/search.php,
+ * ce qui permet de suivre une candidature meme sans etre connecte.
  */
-
-var candidaturesData = [];
-
-function chargerCandidatures() {
-  var cached = sessionStorage.getItem("oct_candidatures_cache");
-  if (cached) return Promise.resolve(JSON.parse(cached));
-
-  var session = typeof getSession === "function" ? getSession() : null;
-  if (session && session.id) {
-    return fetch("../api/candidatures.php?id_candidat=" + encodeURIComponent(session.id))
-      .then(function (r) { return r.json(); });
-  }
-
-  return Promise.resolve([]);
-}
-
-chargerCandidatures().then(function (data) { candidaturesData = Array.isArray(data) ? data : []; });
 
 function stepClass(stepIndex, statut) {
   // Ordre des etapes : 0 Soumission, 1 Examen, 2 Decision, 3 Resultat
@@ -74,7 +54,7 @@ function renderResult(candidature) {
     '<div class="card" style="max-width:640px;">' +
       "<h3>" + offreTitre + "</h3>" +
       '<div class="card-meta">' +
-        '<span class="ref">REF-' + candidature.id + "</span>" +
+        '<span class="ref">' + candidature.reference + "</span>" +
         "<span>&middot;</span>" +
         "<span>Soumise le " + formatDate(candidature.date_soumission || candidature.date_depot) + "</span>" +
       "</div>" +
@@ -83,9 +63,34 @@ function renderResult(candidature) {
   box.style.display = "block";
 }
 
+function rechercherCandidature(reference) {
+  var box = document.getElementById("suivi-result");
+  box.innerHTML = '<div class="empty-state">Recherche en cours...</div>';
+  box.style.display = "block";
+
+  fetch("../api/candidature/search.php?reference=" + encodeURIComponent(reference))
+    .then(function (res) {
+      if (!res.ok) return null;
+      return res.json();
+    })
+    .then(renderResult)
+    .catch(function () { renderResult(null); });
+}
+
 document.getElementById("suivi-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  var ref = document.getElementById("reference").value.trim().replace(/^REF-/i, "");
-  var found = candidaturesData.find(function (c) { return String(c.id) === ref; });
-  renderResult(found);
+  var ref = document.getElementById("reference").value.trim();
+  if (!ref) return;
+  rechercherCandidature(ref);
 });
+
+// Pre-remplit et lance la recherche si la reference est passee dans l'URL
+// (ex: lien recu par email apres depot de candidature : suivi.html?reference=CAND-...)
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var refFromUrl = params.get("reference");
+  if (refFromUrl) {
+    document.getElementById("reference").value = refFromUrl;
+    rechercherCandidature(refFromUrl);
+  }
+})();
