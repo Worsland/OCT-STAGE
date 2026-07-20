@@ -20,12 +20,14 @@ if (typeof emailjs !== "undefined") {
 }
 
 function envoyerEmail(params) {
-  if (typeof emailjs === "undefined") {
-    return Promise.reject(new Error("EmailJS n'est pas charge (verifiez le script CDN dans le HTML)."));
-  }
-  if (EMAILJS_PUBLIC_KEY.indexOf("REMPLACER") === 0) {
-    console.warn("EmailJS n'est pas configure (voir assets/js/emailjs-config.js). Email non envoye :", params);
-    return Promise.resolve({ skipped: true });
-  }
-  return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+  return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+    .then(res => {
+      console.log('EmailJS SUCCESS', res.status, res.text);
+      return res;
+    })
+    .catch(err => {
+      console.error('EmailJS FAILED - Status:', err.status);
+      console.error('EmailJS FAILED - Text:', err.text);
+      throw err; // très important pour que le catch du dessus le récupère
+    });
 }

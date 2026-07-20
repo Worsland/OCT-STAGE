@@ -117,32 +117,42 @@ document.getElementById("candidature-form").addEventListener("submit", function 
     body: formData
   })
  .then(res => res.json())
- .then(data => {
-    if (data.success) {
-      alertBox.className = "alert alert-success show";
-      alertBox.textContent = `Candidature envoyée! Référence : ${data.reference}`;
-      if (typeof envoyerEmail === "function") {
-        envoyerEmail({
-          to_email: session.email,
-          to_name: session.prenom + " " + session.nom,
-          subject: "Confirmation de votre candidature - " + data.reference,
-          message: "Nous avons bien recu votre candidature. Votre reference de suivi est : " + data.reference + ". Conservez-la pour suivre l'evolution de votre candidature.",
-          verification_link: window.location.origin + "/candidat/suivi.html?reference=" + encodeURIComponent(data.reference)
-        }).catch(function () {
-          // L'email est un bonus : un echec d'envoi ne doit pas bloquer
-          // la candidature, deja enregistree en base a ce stade.
-        });
-      }
-      e.target.reset();
-      prefillFromSession();
-      setTimeout(() => window.location.href = 'mes-candidatures.html', 2000);
-    } else {
-      alertBox.className = "alert alert-danger show";
-      alertBox.textContent = 'Erreur: ' + data.error;
+ .then(async data => {
+  if (data.success) {
+    alertBox.className = "alert alert-success show";
+    alertBox.textContent = `Candidature envoyée! Référence : ${data.reference}`;
+
+    try {
+      const result = await envoyerEmail({
+        to_email: session.email,
+        to_name: session.prenom + " " + session.nom,
+        subject: "Confirmation de votre candidature - " + data.reference,
+        message: "Nous avons bien reçu votre candidature. Référence : " + data.reference,
+        verification_link: window.location.origin + "/candidat/suivi.html?reference=" + encodeURIComponent(data.reference),
+        reference: data.reference
+      });
+      console.log('✅ EmailJS OK:', result);
+      alertBox.textContent = `Candidature envoyée! Référence : ${data.reference} - Email envoyé ✅`;
+
+    } catch (err) {
+      console.error('❌ ERREUR EmailJS:', err);
+      console.error('Détail:', err.text || err.message || JSON.stringify(err));
+      console.error('Params envoyés:', {
+        service: EMAILJS_SERVICE_ID,
+        template: EMAILJS_TEMPLATE_ID,
+        key: EMAILJS_PUBLIC_KEY
+      });
+      
+      alertBox.textContent = `Candidature envoyée! Réf: ${data.reference} mais email échoué: ${err.text || err.message}`;
+      alertBox.className = "alert alert-warning show";
     }
-  })
- .catch(err => {
-    alertBox.className = "alert alert-danger show";
-    alertBox.textContent = 'Erreur réseau : ' + err;
-  });
+
+    setTimeout(() => window.location.href = 'mes-candidatures.html', 2500);
+  }
+})
+.catch(err => {
+  console.error('❌ Erreur réseau / API:', err);
+  alertBox.className = "alert alert-danger show";
+  alertBox.textContent = 'Erreur réseau : ' + err.message;
 });
+})
