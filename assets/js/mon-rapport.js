@@ -9,7 +9,7 @@
  *   Le depot doit poster vers /api/rapports.php (multipart), qui insere
  *   dans RAPPORT_STAGE (statut initial 'en_attente').
  */
-console.log("[mon-rapport.js] version 2 chargée (message distinct + parsing JSON sécurisé)");
+console.log("[mon-rapport.js] version 3 chargée (détection du stage validé corrigée pour tous les candidats)");
 
 var session = requireAuth("rapport.html");
 if (!session) {
@@ -42,7 +42,7 @@ Promise.all([getCandidatures(), getRapports()]).then(function (results) {
   var rapports = Array.isArray(results[1]) ? results[1] : [];
 
   var stage = candidatures.find(function (c) {
-    return c.statut === "validee" && ((c.candidat_email || "").toLowerCase() === session.email.toLowerCase());
+    return c.statut === "validee";
   });
 
   var root = document.getElementById("rapport-root");
