@@ -9,19 +9,32 @@
  *   Le depot doit poster vers /api/rapports.php (multipart), qui insere
  *   dans RAPPORT_STAGE (statut initial 'en_attente').
  */
+console.log("[mon-rapport.js] version 2 chargée (message distinct + parsing JSON sécurisé)");
 
 var session = requireAuth("rapport.html");
 if (!session) {
   throw new Error("Utilisateur non authentifié");
 }
 
+function parseJsonSafe(res) {
+  return res.text().then(function (text) {
+    if (!text) return [];
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      console.error("Réponse API invalide:", text);
+      return [];
+    }
+  });
+}
+
 function getCandidatures() {
   return fetch("../api/candidatures.php?id_candidat=" + encodeURIComponent(session.id))
-    .then(function (r) { return r.json(); });
+    .then(parseJsonSafe);
 }
 function getRapports() {
   return fetch("../api/rapport/list.php?id_candidat=" + encodeURIComponent(session.id))
-    .then(function (r) { return r.json(); });
+    .then(parseJsonSafe);
 }
 
 Promise.all([getCandidatures(), getRapports()]).then(function (results) {
@@ -35,9 +48,12 @@ Promise.all([getCandidatures(), getRapports()]).then(function (results) {
   var root = document.getElementById("rapport-root");
 
   if (!stage) {
-    root.innerHTML =
-      '<div class="card"><p>Vous n\'avez pas (encore) de candidature validee. Le depot d\'un rapport de stage est reserve aux stagiaires dont le dossier a ete accepte.</p>' +
-      '<div class="hint">Pour tester cette page en demonstration, connectez-vous avec <strong>salma.bouzid@example.com</strong> / <strong>demo123</strong>.</div></div>';
+    var aDejaPostule = candidatures.length > 0;
+    root.innerHTML = aDejaPostule
+      ? '<div class="card"><p>Votre candidature est en cours de traitement par l\'administration. Le dépôt du rapport de stage sera disponible dès qu\'une candidature aura été validée.</p>' +
+        '<div class="hint">Vous pouvez suivre l\'état de votre candidature depuis la page <a href="mes-candidatures.html">Mes candidatures</a>.</div></div>'
+      : '<div class="card"><p>Vous n\'avez pas encore postulé à une offre de stage. Le dépôt du rapport de stage est réservé aux stagiaires dont la candidature a été validée.</p>' +
+        '<div class="hint">Consultez les <a href="offres.html">offres de stage</a> disponibles pour déposer une candidature.</div></div>';
     return;
   }
 
@@ -122,5 +138,10 @@ Promise.all([getCandidatures(), getRapports()]).then(function (results) {
           }
         });
     });
+  }
+}).catch(function () {
+  var root = document.getElementById("rapport-root");
+  if (root) {
+    root.innerHTML = '<div class="card"><p>Impossible de charger votre rapport de stage pour le moment. Veuillez réessayer plus tard.</p></div>';
   }
 });

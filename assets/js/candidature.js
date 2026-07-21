@@ -2,6 +2,7 @@
  * candidature.js
  * Envoie la candidature vers la BDD via API PHP
  */
+console.log("[candidature.js] version 3 chargée (dialogue systématique en cas d'erreur/doublon)");
 
 var session = requireAuth("candidature.html");
 if (!session) {
@@ -23,6 +24,53 @@ function chargerOffresDejaPostulees() {
         .map(c => String(c.id_offre));
     })
     .catch(() => { offresDejaPostulees = []; });
+}
+
+// Affiche une boîte de dialogue modale (remplace window.alert pour un rendu plus clair)
+function showDialog(options) {
+  var overlay = document.createElement("div");
+  overlay.className = "dialog-overlay";
+
+  var actionsHtml = (options.actions || [{ label: "Fermer", primary: true }])
+    .map(function (a, i) {
+      return '<button type="button" class="btn ' + (a.primary ? "btn-secondary" : "btn-outline") + '" data-action="' + i + '">' + a.label + "</button>";
+    })
+    .join("");
+
+  overlay.innerHTML =
+    '<div class="dialog-box" role="dialog" aria-modal="true">' +
+      '<div class="dialog-icon">!</div>' +
+      "<h3>" + options.title + "</h3>" +
+      "<p>" + options.message + "</p>" +
+      '<div class="dialog-actions">' + actionsHtml + "</div>" +
+    "</div>";
+
+  document.body.appendChild(overlay);
+
+  overlay.querySelectorAll("[data-action]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var action = (options.actions || [])[Number(btn.dataset.action)];
+      overlay.remove();
+      if (action && typeof action.onClick === "function") action.onClick();
+    });
+  });
+
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  return overlay;
+}
+
+function dialogueDejaPostule() {
+  showDialog({
+    title: "Candidature déjà envoyée",
+    message: "Vous avez déjà postulé à cette offre. Consultez \"Mes candidatures\" pour suivre son état.",
+    actions: [
+      { label: "Fermer" },
+      { label: "Mes candidatures", primary: true, onClick: function () { window.location.href = "mes-candidatures.html"; } }
+    ]
+  });
 }
 
 // Affiche un avertissement et desactive l'envoi si l'offre selectionnee a deja
@@ -91,13 +139,24 @@ document.getElementById("candidature-form").addEventListener("submit", function 
   e.preventDefault();
 
   const offreId = document.getElementById('offre_id').value;
-  if (offresDejaPostulees.indexOf(offreId) !== -1) {
-    const alertBox = document.getElementById("form-alert");
-    alertBox.className = "alert alert-danger show";
-    alertBox.textContent = "Vous avez deja postule a cette offre. Consultez \"Mes candidatures\" pour suivre son etat.";
-    return;
-  }
+  const submitBtn = document.querySelector("#candidature-form button[type=submit]");
 
+  // On revérifie en temps réel (pas seulement via le cache local) pour éviter
+  // toute course entre deux onglets/appareils, puis on affiche un dialogue clair.
+  if (submitBtn) submitBtn.disabled = true;
+  chargerOffresDejaPostulees().then(function () {
+    if (offresDejaPostulees.indexOf(offreId) !== -1) {
+      if (submitBtn) submitBtn.disabled = false;
+      vérifierDoublon();
+      dialogueDejaPostule();
+      return;
+    }
+    if (submitBtn) submitBtn.disabled = false;
+    envoyerCandidature();
+  });
+});
+
+function envoyerCandidature() {
   const formData = new FormData();
   formData.append('id_offre', document.getElementById('offre_id').value);
   formData.append('id_candidat', session.id); // depuis requireAuth
@@ -116,8 +175,26 @@ document.getElementById("candidature-form").addEventListener("submit", function 
     method: 'POST',
     body: formData
   })
- .then(res => res.json())
- .then(async data => {
+ .then(res => res.json().then(data => ({ status: res.status, data: data })))
+ .then(async ({ status, data }) => {
+  if (!data.success) {
+    var estDoublon = status === 409 || (data.error && data.error.toLowerCase().indexOf("déjà") !== -1);
+
+    alertBox.className = "alert alert-danger show";
+    alertBox.textContent = data.error || "Impossible d'envoyer la candidature. Veuillez réessayer.";
+
+    if (estDoublon) {
+      chargerOffresDejaPostulees().then(vérifierDoublon);
+      dialogueDejaPostule();
+    } else {
+      showDialog({
+        title: "Envoi impossible",
+        message: data.error || "Une erreur est survenue lors de l'envoi de votre candidature. Veuillez réessayer.",
+        actions: [{ label: "Fermer", primary: true }]
+      });
+    }
+    return;
+  }
   if (data.success) {
     alertBox.className = "alert alert-success show";
     alertBox.textContent = `Candidature envoyée! Référence : ${data.reference}`;
@@ -154,5 +231,10 @@ document.getElementById("candidature-form").addEventListener("submit", function 
   console.error('❌ Erreur réseau / API:', err);
   alertBox.className = "alert alert-danger show";
   alertBox.textContent = 'Erreur réseau : ' + err.message;
+  showDialog({
+    title: "Erreur réseau",
+    message: "Impossible de contacter le serveur (" + err.message + "). Vérifiez votre connexion et réessayez.",
+    actions: [{ label: "Fermer", primary: true }]
+  });
 });
-})
+}
